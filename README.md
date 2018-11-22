@@ -11,7 +11,7 @@ Note: must install irvine library to build .masm project.
 
 This Project based on IQ Quiz Generator which generates different types of questions and user has to select or choice correct one based on tautology of respective question in minimum time.
 
-Features:
+## Features:
 1. Time Delay Function
 2. Scoring Criteria
 3. Win or Loss
@@ -19,3 +19,5 @@ Features:
 
 Minimum 10 Seconds interval for each question after 10 seconds user gets zero for that question.
 
+## Files
+1. new pro 2.txt is the latest and modified file of project.

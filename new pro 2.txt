@@ -1,0 +1,1756 @@
+TITLE OUR PROJECT (pro.asm)
+INCLUDE Irvine32.inc
+
+.data
+	msg1 byte "                                           -----WELCOME TO QUIZ-----                                  "
+		 byte  0dh , 0ah
+		 byte "->20 questions"
+		 byte  0dh , 0ah
+		 byte "->Each correct answer awarded you with 1 point"
+		 byte  0dh , 0ah                                                						;line change same as call crlf
+		 byte "->'R' or 'W' stands for Right or Wrong respectively"
+		 byte  0dh , 0ah
+		 byte "->Each question have 60 seconds to answer"
+		 byte  0dh , 0ah
+		 byte "->After 60 second it will count wrong whether its Right or Wrong"
+		 byte  0dh , 0ah
+		 byte "->Quiz will start automatically after 10 sec (Don't press any key)!"
+		 byte  0dh , 0ah
+		 byte  0dh , 0ah
+		 byte "                            ***************************************************                          ",0
+	msg2 byte ")Identify the missing number in this sequence? ",0
+	msg3 byte "___",0
+	msg4 byte  0dh , 0ah 
+		 byte "ENTER MISSING NUMBER IN THIS SEQUENCE: ",0
+	msg5 byte "      YOUR SCORE: ",0
+	msg6 byte "     ********    YOUR RESULT    ********",0
+	msg7 byte ") ",0
+	count dword ?                                                       ; correct answer counter
+	temp dword ?													    ; temp variable
+	temp1 dword ?														;1  more temp variable
+	temp2 dword ?														;1  more temp variable
+	arr dword 100 dup(?)                                                ;just for save sequence
+	element dword ?                                                     ;number of element in the array
+	cans dword ?                                                        ;saving correct answer
+	rnum dword ?														; random number which need to be ask
+	arr2 byte 30 dup(?)													;ans is wrong or right 				
+	cc dword 0															; question counter
+	rfun dword 0                                                        ;random function which need to run
+	rt dword  0																		
+	stime dword 0														;starting time
+.code
+	main proc
+	     mov  eax,red+(black*16)
+	     ;call SetTextColor
+		call menu
+		mov eax , 10000
+		;call delay
+		;call randomize
+;*********************************************************************************************************************************
+
+		mov rt, 21										;beacuse of 20 question
+ran1:
+		mov ecx , 55454                                                  ;just garbage  value
+		dec rt
+		cmp rt , 0
+		je f21
+		mov eax , 15                      
+		;call randomrange
+				cmp eax , 0
+		je f1
+				cmp eax , 1
+		je f2
+				cmp eax , 2
+		je f3
+				cmp eax , 3
+		je f4
+				cmp eax , 4
+		je f5
+				cmp eax , 5
+		je f6
+				cmp eax , 6
+		je f7
+				cmp eax , 7
+		je f8
+				cmp eax , 8
+		je f9
+				cmp eax , 9
+		je f10
+				cmp eax , 10
+		je f11
+				cmp eax , 11
+		je f12
+				cmp eax , 12
+		je f13
+				cmp eax , 13
+		je f14
+				cmp eax , 14
+		je f15
+				cmp eax , 15
+		je f16
+				cmp eax , 16
+		je f17
+jmp ran1
+
+;*********************************************************************************************************************************
+			
+	f1:		call trianglenum
+			jmp ran1
+	f2:		call squarenum			
+			jmp ran1
+	f3:		call cubenum	
+			jmp ran1
+	f4:		call oblong
+			jmp ran1
+	f5:		call pentagonal
+			jmp ran1
+	f6:		call hexagonal
+			jmp ran1
+	f7:		call rectangular
+			jmp ran1
+	f8:		call arithmetic	
+			jmp ran1
+	f9:		call geometric
+			jmp ran1
+	f10:	call doublesequence
+			jmp ran1
+	f11:	call neon
+			jmp ran1
+	f12:	call fib 
+			jmp ran1
+	f13:	call composite
+			jmp ran1
+	f14:	call pedal
+			jmp ran1
+	f15:	call prime
+			jmp ran1
+	f16:	call basepower
+			jmp ran1
+	f17:	call multioperation
+			jmp ran1	
+	f21:
+		call answer
+		call score
+
+		exit
+	main ENDP
+
+	;*****************************************************************************************************************************
+	
+	menu proc
+		mov edx , 0
+		mov edx , offset msg1
+		call writestring
+		call crlf
+		call crlf
+		ret
+	menu endp
+	
+	;*****************************************************************************************************************************
+	answer proc                                                                           ;print your answer is right or wrong
+		mov edx , offset msg6
+		call writestring
+		call crlf
+		mov ecx , cc 
+		mov cc , 1
+	l1:
+		mov eax , cc
+		call writedec
+		mov edx , offset msg7
+		call writestring
+		mov esi , cc
+		mov al , arr2[esi]
+		call writechar
+		inc cc
+		call crlf
+	loop l1
+		ret
+	answer endp
+
+	;*****************************************************************************************************************************
+	score proc                                                                            ;print score 
+		mov eax , count
+		mov edx, offset msg5
+		call writestring
+		call writedec
+		call crlf
+		call crlf
+		ret
+	score endp
+
+	;*****************************************************************************************************************************
+	trianglenum proc                                                               ;triangle number function
+		inc cc	
+		mov eax , cc
+		call writedec												
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 1
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov edx , 2
+		mov esi , 0
+		mov eax , 1
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 100
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					     ;storing in array
+		inc edx 
+		add esi , 4
+		inc element                                                  ;number of element
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	call crlf
+	call crlf
+		ret
+	trianglenum endp
+
+	
+	;*****************************************************************************************************************************
+
+	squarenum proc                                              				 ;square number function
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 1
+		call writedec
+		mov temp , eax
+		mov al , 9										 ; for tab space 
+		call writechar										; tab ascii value is 9
+		mov edx , 3
+		mov esi , 0
+		mov element , 0
+	l1:
+		mov eax , temp
+		add eax , edx
+		cmp eax , 100
+		jg extl1										; number donot exceede greater than 100
+		mov arr[esi],eax									;storing in array
+		mov temp , eax
+		add edx , 2 
+		add esi , 4
+		inc element
+	loop l1	
+
+	extl1:												;if num greater than 100 jump here
+	mov esi , 0                                        
+	mov ecx , element
+	mov eax , element
+	call randomize                                                 					 ;seed new
+	call randomrange
+	mov rnum , eax
+
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95                                            				 ;95 ascii of _ this sign
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9										;for tab space
+		call writechar										; tab ascii value is 9
+	    inc esi
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5											;if ans wrong then jump l5
+		inc count										;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+	call crlf
+	call crlf
+		ret
+	squarenum endp
+
+	;*****************************************************************************************************************************
+	
+	
+	cubenum proc											;cube number procedure
+		inc cc	
+		mov eax , cc
+		call writedec
+	mov edx,0
+	mov edx, offset msg2
+	call WriteString
+	call crlf
+	mov temp,1
+	mov esi , 0
+	mov element , 0
+	L1:
+		mov eax,temp
+		mul temp
+		mul temp
+		cmp eax , 300                                   ;only in this proc it will check greater than 100
+		jg extl1										; number donot exceede greater than 100
+		mov arr[esi],eax									;storing in array
+		add esi , 4
+		inc element                                                 				;number of element
+		mov al,9
+		call WriteChar                                            				  ; tab space
+		inc temp
+	Loop L1
+
+	extl1:												;if num greater than 100 jump here
+	mov esi , 0                                        
+	mov ecx , element
+	mov eax , element
+	call randomize                                               					   ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9													;for tab space
+		call writechar												; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5														;if ans wrong then jump l5
+		inc count													;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+	call crlf
+	call crlf
+	ret
+	cubenum endp
+
+   ;*****************************************************************************************************************************
+
+	Pentagonal proc													;pentagonal number function
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 1
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov edx , 4
+		mov esi , 0
+		mov eax , 1
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 100
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					  ;storing in array
+		add edx , 3 
+		add esi , 4
+		inc element                                              ;number of element
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+	call crlf
+	call crlf
+		ret
+	Pentagonal endp
+	
+;************************************************************************************************************************************************
+
+hexagonal proc														;hexagonal number function
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 1
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov edx , 5
+		mov esi , 0
+		mov eax , 1
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 100
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					  ;storing in array
+		add edx , 4 
+		add esi , 4
+		inc element                                              ;number of element
+	loop l1	 
+extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+	hexagonal endp
+
+;*****************************************************************************************************************************************************
+
+rectangular proc                                    ;rectangular number 
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 2
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov edx , 4
+		mov esi , 0
+		mov eax , 2
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 100
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					  ;storing in array
+		add edx , 2                                ;main logic 
+		add esi , 4
+		inc element                                              ;number of element
+	loop l1	 
+extl1:												;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+		call crlf
+		call crlf
+		ret
+rectangular endp
+
+;**********************************************************************************************************************************************
+
+arithmetic proc
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 1
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov eax , 12                 ; generate random number between 0 to 11...this difference
+		call randomize					
+		call randomrange
+		add  eax , 8				; add what is generated by random function
+		mov edx , eax			    ; give that random differnce to edx
+		mov esi , 0
+		mov eax , 1
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 100
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					  ;storing in array
+		add esi , 4
+		inc element                                              ;number of element
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 5000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+arithmetic endp
+
+;**********************************************************************************************************************************************
+
+
+Oblong proc                                    ;oblong number 2 times of triangular number
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 2
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov edx , 4
+		mov esi , 0
+		mov eax , 2
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 100
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					  ;storing in array
+		add edx , 2                                ;main logic 
+		add esi , 4
+		inc element                                              ;number of element
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+oblong endp
+
+;**********************************************************************************************************************************************
+
+geometric proc                                    ;geometric sequence (g=a1+r^n)
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 3
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov esi , 0
+		mov element , 0
+		mov temp , 3					;starting point
+		mov temp1 , 4					;difference 
+
+	l1:
+		mov eax , temp
+		mul temp1
+		mov temp , eax
+		cmp eax , 10000
+		jg extl1								; number donot exceede greater than 100
+		mov arr[esi],eax						;storing in array 
+		add esi , 4
+		inc element                             ;number of element
+	loop l1	 
+
+
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+geometric endp
+
+;**********************************************************************************************************************************
+
+doublesequence proc                                    ;double sequence number 
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov esi , 0
+		mov element , 0
+		mov edx , 13                           ;1st sequence difference (IT must be greater then 2nd sequence difference)
+		mov temp1 , 6						   ;2nd sequence difference
+		mov eax , 0
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 100
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					 ;storing in array 
+		add esi , 8
+		inc element                          ;number of element
+	loop l1	 
+	extl1:								     ;if num greater than 100 jump here
+	
+		mov ecx , element
+		mov esi , 4
+		mov eax , 0
+	k1:
+		add eax , temp1
+		mov arr[esi],eax					 ;storing in array 
+		add esi , 8
+		inc element                          ;number of element
+	loop k1	
+	
+	
+	extl2:
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+doublesequence endp
+
+;******************************************************************************************************************************
+
+neon proc                                    ;neon number (any num square .....it answer break .....n then add digits.... get same number)
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 1
+		call writedec
+		mov temp , eax
+		mov al , 9
+		call writechar
+		mov esi , 0
+		mov element , 0
+		mov temp , 4							 ;starting point
+		mov temp1 , 0
+		mov ebx , 10
+	l1:
+		mov temp1 , 0
+		mov eax , temp
+		mul temp
+		mov temp2 , eax
+	k1:
+		mov eax , 0
+		mov eax , temp2
+		mov edx , 0
+		div ebx
+		mov temp2 , eax
+		cmp eax , 0
+		jle k2
+		add temp1 , edx
+	loop k1	
+	
+	k2:
+		add temp1 , edx
+		mov eax , temp
+		cmp eax , 1000                       ;check till this
+		jge extl1								; number donot exceede greater than 100
+		mov eax , temp
+		cmp eax , temp1
+		jz k3
+		inc temp
+		jmp l1
+	k3:
+		mov eax , temp
+		;cmp eax , 11
+		;jge extl1								; number donot exceede greater than 100
+		mov arr[esi],eax						;storing in array 
+		add esi , 4
+		inc element                             ;number of element
+		inc temp
+	loop l1	 
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+neon endp
+
+
+;********************************************************************************************************************************
+
+fib proc                                    ;fibonacci sequence number 
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov esi , 0
+		mov element , 0
+		mov temp , 8                           ;1st number
+		mov eax , temp
+		mov arr[esi],eax					 ;storing in array 
+		add esi , 4
+		mov temp1 , 13						   ;2nd number
+		mov eax , temp1
+		mov arr[esi],eax					 ;storing in array 
+		add esi , 4
+		mov eax , 0
+		;mov element , 2
+	l1:
+		mov eax , temp
+		add eax , temp1  
+		cmp eax , 1500
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					 ;storing in array 
+		mov temp1 , eax
+		mov eax , arr[esi - 4]
+		mov temp , eax
+		add esi , 4
+		inc element                          ;number of element
+	loop l1	 
+
+	
+	extl1:
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+fib endp
+
+;*********************************************************************************************************************************
+
+composite proc											;other then prime number
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov edx , 0
+		mov esi , 0
+		mov temp , 11                                     ; staring point
+		mov element , 0
+	l1:
+				mov eax , temp
+		mov edx , 0
+		mov ebx , 2
+		div ebx
+		cmp edx , 0
+		jz p1
+		mov edx , 0
+				mov eax , temp
+		mov ebx , 3
+		div ebx
+		cmp edx , 0
+		jz p1
+		mov edx , 0
+				mov eax , temp
+		mov ebx , 5
+		div ebx
+		cmp edx , 0
+		jz p1
+		mov edx , 0
+				mov eax , temp
+		mov ebx , 7
+		div ebx
+		cmp edx , 0
+		jz p1
+		add temp , 1			     
+		jmp l1
+p1:
+		mov eax , temp							; number donot exceede greater than 100
+		cmp eax , 30
+		jg extl1
+		mov arr[esi],eax					  ;storing in array
+		add esi , 4
+						;inc element                          ;number of element
+		inc temp
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+		mov eax , esi
+		mov ebx , 4
+		mov edx , 0
+		div ebx
+		mov element , eax
+		mov esi , 0
+		mov ecx , element
+		mov eax , element
+		call randomize                                                       ;seed new
+		call randomrange
+		mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+composite endp
+
+;********************************************************************************************************************************
+
+pedal proc                                                               ;pedal number function
+		inc cc	
+		mov eax , cc
+		call writedec												
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov eax , 5
+		call randomrange
+		add eax ,  1
+		mov edx , eax
+		mov esi , 0
+		mov eax , 1
+		mov element , 0
+	l1:
+		add eax , edx
+		cmp eax , 150
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					     ;storing in array
+		add edx , 4
+		add esi , 4
+		inc element                                                  ;number of element
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	call crlf
+	call crlf
+		ret
+	pedal endp
+
+;********************************************************************************************************************************
+
+
+prime proc											;prime number
+		inc cc	
+		mov eax , cc
+		call writedec
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov edx , 0
+		mov esi , 0
+		mov temp , 35                                    ; staring point
+		mov element , 0
+	l1:
+				mov eax , temp
+		mov edx , 0
+		mov ebx , 2
+		div ebx
+		cmp edx , 0
+		jz p1
+		mov edx , 0
+				mov eax , temp
+		mov ebx , 3
+		div ebx
+		cmp edx , 0
+		jz p1
+		mov edx , 0
+				mov eax , temp
+		mov ebx , 5
+		div ebx
+		cmp edx , 0
+		jz p1
+		mov edx , 0
+				mov eax , temp
+		mov ebx , 7
+		div ebx
+		cmp edx , 0
+		jz p1
+		mov eax , temp
+		mov arr[esi],eax					  ;storing in array
+		add esi , 4		
+		inc temp     
+		jmp l1
+p1:
+		inc temp
+		mov eax , temp
+		cmp eax , 80
+		jg extl1
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+		mov eax , esi
+		mov ebx , 4
+		mov edx , 0
+		div ebx
+		mov element , eax
+		mov esi , 0
+		mov ecx , element
+		mov eax , element
+		call randomize                                                       ;seed new
+		call randomrange
+		mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9									;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	
+		call crlf
+		call crlf
+		ret
+prime endp
+
+;********************************************************************************************************************************
+
+basepower proc                                                               ;2 power number function
+		inc cc	
+		mov eax , cc
+		call writedec												
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov esi , 0
+		mov eax , 2
+		mov arr[esi],eax
+		mov element , 1
+		mov eax , 5
+		call randomrange
+		add eax , 1
+		mov ebx , eax
+		add esi , 4
+	l1:
+		mov edx , 0
+		mov eax , arr[esi-4]
+		mul ebx
+		cmp eax , 256
+		jg extl1						     ; number donot exceede greater than 100
+		mov arr[esi],eax					     ;storing in array
+		add esi , 4
+		inc element                                                  ;number of element
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9										;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 60000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	call crlf
+	call crlf
+		ret
+	basepower endp
+
+;********************************************************************************************************************************
+
+multioperation proc                                                               ;multi operation numbers
+		inc cc	
+		mov eax , cc
+		call writedec												
+		mov edx , 0
+		mov edx , offset msg2
+		call writestring
+		call crlf
+		mov esi , 0
+		mov eax , 2               ;staring point
+		mov arr[esi],eax
+		mov element , 1
+		mov ebx , 3
+		add esi , 4
+	l1:
+		mov edx , 0
+		mov eax , arr[esi-4]
+
+		add eax , 2
+		inc element
+		mov arr[esi],eax					     ;storing in array
+		
+		add esi , 4
+		inc element                                ;number of element
+		mov eax , arr[esi-4]
+		mul ebx
+		mov arr[esi],eax					     ;storing in array
+		
+		add esi , 4
+		inc element                                ;number of element
+		mov eax , arr[esi-4]
+		sub eax , 4
+		
+		mov arr[esi],eax					     ;storing in array
+		add esi , 4
+		cmp eax , 50
+		jg extl1						     ; number donot exceede greater than 100
+                                                  ;number of element
+	loop l1	 
+
+	extl1:								     ;if num greater than 100 jump here
+	mov esi , 0
+	mov ecx , element
+	mov eax , element
+	call randomize                                                       ;seed new
+	call randomrange
+	mov rnum , eax
+	l2:
+		mov eax , rnum
+		cmp esi , eax
+		jnz l3
+			mov eax , arr[esi * type arr]
+			mov cans , eax
+			mov al , 95
+			call writechar
+			jmp l4
+
+		l3:			
+		mov eax , arr[esi * type arr]
+		call writedec
+		
+		l4:
+		mov temp , eax	
+		mov al , 9										;for tab space
+		call writechar									; tab ascii value is 9
+	    inc esi 
+		mov eax , temp
+	loop l2
+		call crlf
+		mov edx , offset msg4
+		call writestring
+		mov eax , 0
+		call getmseconds
+		mov stime , eax                                    ;initial time
+		call readdec												
+		mov temp , eax
+		call getmseconds									;final time
+		sub eax , stime										;time taken
+		cmp eax , 5000                                     ;time limit                           
+		jg l5
+		mov eax , temp
+		cmp cans , eax
+		jne l5										;if ans wrong then jump l5
+		inc count									;correct answer counter
+		mov esi  , cc
+		mov arr2[esi] , 'R'
+		jmp l8
+	l5:
+		mov esi  , cc
+		mov arr2[esi] , 'W'
+	l8:
+	call crlf
+	call crlf
+		ret
+	multioperation endp
+
+;********************************************************************************************************************************
+
+END main

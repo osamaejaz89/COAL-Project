@@ -1,12 +1,12 @@
-#Welcome to MY COAL Project
+# Welcome to MY COAL Project
 
-##Prequisties:
+## Prequisties:
 1. Visual Studio 2012
 2. Irvine Library 
 
 Note: must install irvine library to build .masm project.
 
-##Languages:
+## Languages:
 1. masm x8086 Assembly Language.
 
 This Project based on IQ Quiz Generator which generates different types of questions and user has to select or choice correct one based on tautology of respective question in minimum time.
